@@ -1,0 +1,31 @@
+/* Base Font Styling */
+body { 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+} 
+
+h1, h2, h3, h4 { 
+  font-family: 'Outfit', sans-serif; 
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { 
+  display: none; 
+}
+
+.no-scrollbar { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+/* Custom Asphalt Grid Container */
+.parking-asphalt {
+  background-color: #1e293b;
+  background-image: radial-gradient(#334155 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  border-radius: 16px;
+}
+/* .interactive-parking-grid {
+  background-color: #101828;
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+} */

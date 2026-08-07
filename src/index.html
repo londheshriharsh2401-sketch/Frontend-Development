@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MallPark — Smart Parking v3</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- QR Code Libraries -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+</head>
+<body style="background-image: url(background1.jpg); background-size: cover;" class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
+
+  <div>
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 bg-black border-b border-slate-800 h-[65px]">
+      <div class="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div style="background-image: url('car logo.webp'); background-size: cover;" class="w-16 h-16 rounded-full grid place-items-center font-bold text-white text-lg shadow-md">
+          </div>
+          <span class="font-[Outfit] font-bold text-white text-xl tracking-tight">Mall Park</span>
+          <span class="text-[10px] bg-black text-white px-2 py-0.5 rounded-full border border-indigo-500/30">SMART</span>
+        </div>
+        <nav class="hidden md:flex gap-8 text-[13px] font-medium text-slate-300">
+          <a href="#layout" class="hover:text-orange-400 text-slate-200 transition font-semibold">Layout</a>
+          <a href="#register" class="hover:text-orange-400 text-slate-200 transition font-semibold">Register</a>
+          <a href="#exit" class="hover:text-orange-400 text-slate-200 transition font-semibold">Exit Gate </a>
+          <button type="button" id="navMallGuideBtn" class="hover:text-orange-400 text-slate-200 transition font-semibold">Mall Guide </button>
+        </nav>
+        <div class="flex items-center gap-2">
+          <span class="flex text-[12px] bg-slate-900 border border-slate-800 text-slate-300 px-3 h-8 rounded-full items-center gap-2">
+            <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span><b>Live System</b>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="max-w-[1280px] mx-auto px-6 py-8">
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div class="bg-[#A8CABA] border rounded-[24px] ">
+          <h1 class="text-[40px] leading-[1.05] font-bold ml-[20px] mt-[10px] tracking-tight text-slate-900 ">Smart Parking.<br>No Chos.</h1>
+          <p class="mt-3 text-[15px] ml-[15px] text-black-600/50 max-w-[460px]">Pick your exact slot, get a 6-Hour QR pass instantly. Each lane features dedicated 2-wheeler and 4-wheeler zones.</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="#layout" class="h-11 px-6 rounded-full hover:bg-white ml-[20px] text-black text-[14px] font-semibold inline-flex items-center transition shadow-sm">View Layout</a>
+            <a href="#register" class="h-11 px-6 rounded-full hover:bg-white ml-[50px] text-black text-[14px] font-semibold inline-flex items-center transition shadow-sm">Register Vehicle</a>
+            <a href="#exit" class="h-11 px-6 rounded-full hover:bg-white ml-[50px] text-black text-[14px] font-semibold inline-flex items-center transition shadow-sm">Exit Gate</a>  
+          </div>
+        </div>
+        <div style="background-image: url(parking.jpg);background-size: cover;" class="rounded-[24px] overflow-hidden h-[220px] relative shadow-md">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="text-[13px] opacity-90">6-Hour Real-Time Reserved Slots</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parking Layout Section -->
+    <section id="layout" class="max-w-[1280px] mx-auto px-4 sm:px-6 pb-6">
+      <div class="bg-[#a7dbd8] rounded-[24px] border border-slate-200 shadow-sm overflow-hidden">
+        <div class="relative px-5 sm:px-7 py-5 border-b border-slate-100 bg-slate-50/50">
+          <div class="relative flex flex-wrap gap-3 items-center justify-between">
+            <div>
+              <h2 class="text-[20px] font-bold text-slate-800">Interactive Parking Grid</h2>
+              <p class="text-[12px] text-slate-500">5 × 2W (B01-B05) + 15 × 4W (A01-A15) per lane • Tap any vacant slot to select</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <div id="filterPills" class="h-9 rounded-full bg-[#ccff33] p-1 flex text-[12px] font-medium border border-slate-300">
+                <button type="button" data-f="All" class="filter-btn px-3 h-7 rounded-full bg-white text-slate-800 shadow-sm font-semibold">All</button>
+                <button type="button" data-f="2W" class="filter-btn px-3 h-7 rounded-full text-slate-600 hover:text-slate-900">2W</button>
+                <button type="button" data-f="4W" class="filter-btn px-3 h-7 rounded-full text-slate-600 hover:text-slate-900">4W</button>
+              </div>
+              <select id="laneSelect" class="h-9 rounded-full border border-slate-300 bg-[#ccff33] px-3 text-[12px] font-semibold text-slate-700 outline-none shadow-sm">
+                <option style="background-color: white;" value="All">All Lanes</option>
+                <option style="background-color: white;" value="1">Lane 1</option>
+                <option style="background-color: white;" value="2">Lane 2</option>
+                <option style="background-color: white;" value="3">Lane 3 (EV)</option>
+                <option style="background-color: white;" value="4">Lane 4</option>
+                <option style="background-color: white;" value="5">Lane 5</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slot Legend -->
+        <div class="px-5 sm:px-7 py-2.5 bg-[#f9cdad] border-b border-slate-200 flex flex-wrap gap-4 text-[11px] font-medium text-slate-600">
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-white border border-slate-300 shadow-sm"></span>Vacant Slot</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-slate-950 border border-slate-800"></span>Occupied</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-amber-500 border border-amber-600"></span>2-Wheeler Zone</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-sky-500 border border-sky-600"></span>4-Wheeler Zone</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-indigo-600 border border-indigo-700"></span>Selected</span>
+        </div>
+
+        <!-- Asphalt Map Grid -->
+        <div class="grid lg:grid-cols-[1fr_300px] gap-0">
+          <div class="p-5 parking-asphalt min-h-[380px] max-h-[460px] overflow-auto">
+            <div id="lanesContainer" class="space-y-4"></div>
+          </div>
+          
+          <!-- Sidebar Selection Preview -->
+          <div class="border-t lg:border-t-0 lg:border-l border-slate-200 p-5 bg-[#a7dbd8] flex flex-col justify-between">
+            <div>
+              <div style="background-image: url(Live\ slot.jpeg);background-size: cover;" class="rounded-[16px] overflow-hidden h-[120px] relative mb-4 shadow-sm">
+                <div class="absolute inset-0 bg-black/40"></div>
+                <p class="absolute bottom-2 left-3 text-white text-[12px] font-semibold">Live Slot Status</p>
+              </div>
+              <h3 class="text-[13px] font-bold uppercase tracking-wider text-black-600/60">Selected Reservation</h3>
+              <div id="selectedInfo" class="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <p class="text-[13px] text-slate-500">No slot selected — tap a white slot from the layout grid.</p>
+              </div>
+              
+              <div class="mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
+                <span class="text-emerald-600 font-bold text-sm">⚡</span>
+                <span><strong>Note:</strong> Lane 3 is reserved for EV charging, and charges are applied when vehicles use the charging facility.</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="p-3 rounded-xl bg-amber-50 text-amber-900 text-[11px] leading-relaxed border border-amber-200/80 mb-4">
+                <p class="font-bold uppercase tracking-wider text-[10px] text-amber-800">⏱️ 6-Hour Auto Vacate Policy</p>
+                <p class="mt-0.5">Reservations remain active for 6 hours max before auto-vacating from live memory.</p>
+              </div>
+              <button type="button" id="goRegister" class="w-full h-11 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-semibold transition shadow-sm flex items-center justify-center gap-2">
+                <span>Continue to Registration</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Horizontal 3-Image Section -->
+    <section class="max-w-[1280px] mx-auto px-4 sm:px-6 pb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition group">
+          <div style="background-image: url(ev\ charging.jpg);background-size: cover;" class="h-44 overflow-hidden relative">
+            <span class="absolute top-3 left-3 bg-white text-black text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">Lane 3</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-slate-800 text-[15px] flex items-center gap-1.5">⚡ EV Section</h3>
+            <p class="text-[12px] text-slate-500 mt-1">Dedicated fast-charging stations reserved for electric vehicles in Lane 3.</p>
+          </div>
+        </div>
+
+        <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition group">
+          <div style="background-image: url(covered\ parking.jpg);background-size: cover;" class="h-44 overflow-hidden relative">
+            <span class="absolute top-3 left-3 bg-white text-black text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">Parking</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-slate-800 text-[15px] flex items-center gap-1.5">🏢 Covered Layout</h3>
+            <p class="text-[12px] text-slate-500 mt-1">Weather-proof basement parking bays equipped with smart automated guide sensors.</p>
+          </div>
+        </div>
+
+        <div class="rounded-[20px] border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition group">
+          <div style="background-image: url(remaining\ parking.jpeg);background-size: cover;" class="h-44 overflow-hidden relative">
+            <span class="absolute top-3 left-3 bg-white text-black text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">Lanes 1, 2, 4, 5</span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-slate-800 text-[15px] flex items-center gap-1.5">🅿️ Remaining Layout</h3>
+            <p class="text-[12px] text-slate-500 mt-1">Standard 2-wheeler and 4-wheeler bays distributed across remaining operational lanes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Registration & Live Active List -->
+    <section id="register" class="max-w-[1280px] mx-auto px-4 sm:px-6 pb-12">
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-[#D8F1FE] rounded-[24px] border border-slate-200 p-6 sm:p-8 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start relative z-10">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">Pass System</span>
+              <h2 class="text-[22px] font-bold mt-2 text-slate-800">Register Vehicle</h2>
+              <p class="text-[12px] text-slate-500 mt-0.5">Fill details to lock your parking slot & obtain a QR Pass</p>
+            </div>
+          </div>
+
+          <form id="regForm" class="mt-6 space-y-4 relative z-10">
+            <div>
+              <label class="text-[11px] font-semibold text-slate-700">Full Name *</label>
+              <input id="userName" required placeholder="Rajvardhan Patil" class="mt-1 w-full h-11 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"/>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700">Mobile Number *</label>
+                <input id="mobile" required placeholder="10-digit mobile" class="mt-1 w-full h-11 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"/>
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700">Vehicle Number *</label>
+                <input id="vehNo" required placeholder="e.g. MH09GE2022" class="mt-1 w-full h-11 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition uppercase"/>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700">Vehicle Type</label>
+                <select id="vType" class="mt-1 w-full h-11 rounded-xl bg-slate-50 border border-slate-200 px-3 text-[13px] text-slate-800 outline-none focus:bg-white focus:border-indigo-500 transition">
+                  <option value="4W">Four Wheeler (4W)</option>
+                  <option value="2W">Two Wheeler (2W)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700">Selected Slot *</label>
+                <input id="slotInput" readonly required placeholder="Pick from layout grid" class="mt-1 w-full h-11 rounded-xl text-semibold bg-indigo-50/70 border border-indigo-200 px-4 text-[13px] font-bold text-indigo-700 outline-none"/>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[11px] font-semibold text-slate-700">Email Address (Optional)</label>
+              <input id="email" type="email" placeholder="you@example.com" class="mt-1 w-full h-11 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"/>
+            </div>
+
+            <button type="submit" class="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[14px] font-semibold mt-2 shadow-md transition">Confirm Reservation & Generate QR Pass</button>
+          </form>
+        </div>
+
+        <div class="bg-[#E2ECE9] rounded-[24px] border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-[18px] font-bold text-slate-800">Live Active Registrations</h3>
+                <p class="text-[12px] text-slate-500">Auto-expires after 6 hours</p>
+              </div>
+              <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
+            </div>
+            <div id="regList" class="mt-4 space-y-3 text-[12px] max-h-[340px] overflow-y-auto pr-1"></div>
+          </div>
+          
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exit Gate Section -->
+    <section id="exit" class="max-w-[1280px] mx-auto px-4 sm:px-6 pb-16">
+      <div class="bg-[#E3DDFF] rounded-[24px] border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-white bg-slate-900 px-2.5 py-1 rounded-full">Exit Terminal Gate</span>
+            <h2 class="text-[22px] font-bold mt-1 text-slate-800">Vacate Slot & Process Exit</h2>
+            <p class="text-[12px] text-slate-500">Enter your Pass Code or Slot ID (e.g., L1-A01) to open gate & release slot.</p>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 mt-6">
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+            <h3 class="text-[15px] font-bold flex items-center gap-2 text-slate-800">
+              <span>⌨️</span> Enter Pass Code or Slot ID
+            </h3>
+            <p class="text-[11px] text-slate-500 mt-1">Type your assigned Pass Code or Slot Number directly.</p>
+            
+            <div class="mt-4 space-y-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700">Pass Code / Slot Number</label>
+                <input id="exitPassCode" type="text" placeholder="e.g. MP-8F92A1 or L1-A01" class="mt-1 w-full h-11 rounded-xl border border-slate-300 bg-white px-4 text-[13px] font-mono font-bold uppercase outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"/>
+              </div>
+              <button type="button" id="btnVacateByCode" class="w-full h-11 rounded-xl bg-indigo-600/80 hover:bg-red-500/100 text-white text-[13px] font-semibold transition shadow-sm">
+                Verify & Vacate Position →
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+            <h3 class="text-[15px] font-bold flex items-center gap-2 text-slate-800">
+              <span>📷</span> Upload QR Code Pass Image
+            </h3>
+            <p class="text-[11px] text-slate-500 mt-1">Upload a photo/screenshot of your QR Pass to auto-read code.</p>
+
+            <div class="mt-4 space-y-3">
+              <input type="file" id="qrFileInput" accept="image/*" class="block w-full text-[12px] text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[12px] file:font-semibold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer"/>
+              <p class="text-[10px] text-slate-400">Supports JPG, PNG, WEBP images.</p>
+              <div id="qrReaderHidden" class="hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="exitMsg" class="mt-5 hidden p-4 rounded-xl text-[13px] font-medium border flex items-center justify-between"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Generated QR Pass Popup Modal -->
+  <div id="qrModal" class="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm hidden grid place-items-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border border-slate-200 space-y-4">
+      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full grid place-items-center mx-auto text-xl font-bold">✓</div>
+      <div>
+        <h3 class="text-xl font-bold text-slate-800">Booking Confirmed!</h3>
+        <div class="mt-1 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 rounded-full text-xs font-semibold border border-amber-200">
+          <span>⏱️ Valid For 6 Hours:</span>
+          <span id="qrTimer" class="font-mono font-bold text-amber-900">06:00:00</span>
+        </div>
+      </div>
+      
+      <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl inline-block shadow-inner mx-auto">
+        <div id="qrcodeCanvas" class="flex justify-center"></div>
+      </div>
+
+      <div class="bg-slate-100 p-3 rounded-xl border border-slate-200">
+        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Secret Pass Code</p>
+        <p id="modalPassCode" class="text-lg font-mono font-bold text-indigo-600 tracking-wider mt-0.5">MP-XXXXXX</p>
+        <p id="modalSlotDetails" class="text-xs text-slate-600 mt-1">Slot: L1-A01 • MH12AB1234</p>
+      </div>
+
+      <div class="space-y-2 pt-2">
+        <button type="button" id="modalGuideBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2">
+          <span>Proceed to Mall Guide</span>
+          <span>📍</span>
+        </button>
+        <button type="button" id="modalDoneBtn" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">Done & Direct to Parking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mall Guide Prompt Modal -->
+  <div id="guidePromptModal" class="fixed inset-0 z-[130] bg-slate-900/80 backdrop-blur-sm hidden grid place-items-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border border-slate-200 space-y-4">
+      <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full grid place-items-center mx-auto text-xl font-bold">🗺️</div>
+      <h3 class="text-lg font-bold text-slate-800">Explore Mall Directory?</h3>
+      <p class="text-xs text-slate-500 leading-relaxed">Would you like step-by-step indoor store directory navigation directly from your reserved spot?</p>
+
+      <div class="flex gap-2">
+        <button type="button" id="promptNoBtn" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs">No, Thanks</button>
+        <button type="button" id="promptYesBtn" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs">Open Guide 📍</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Pass Code / SMS OTP Recovery Modal -->
+  <div id="forgotModal" class="fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm hidden grid place-items-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-md w-full text-left shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="text-lg font-bold text-slate-800">Retrieve Pass Code via SMS OTP</h3>
+        <button type="button" id="closeForgotModalBtn" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+
+      <div id="otpStep1" class="space-y-3">
+        <p class="text-xs text-slate-600">Enter your registered mobile number to receive a verification OTP SMS.</p>
+        <div>
+          <label class="text-xs font-semibold text-slate-700">Registered Mobile Number</label>
+          <input id="forgotMobileInput" type="text" placeholder="Enter 10-digit mobile" class="mt-1 w-full h-11 border border-slate-300 rounded-xl px-4 text-xs outline-none focus:border-indigo-600"/>
+        </div>
+        <button type="button" id="sendOtpBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition">Send OTP SMS →</button>
+      </div>
+
+      <div id="otpStep2" class="space-y-3 hidden">
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center justify-between">
+          <span>📲 Simulated SMS sent to mobile!</span>
+          <b id="simulatedOtp" class="font-mono bg-amber-200 px-2 py-0.5 rounded text-amber-900">OTP: 4829</b>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-700">Enter 4-Digit OTP</label>
+          <input id="otpInput" type="text" maxlength="4" placeholder="e.g. 4829" class="mt-1 w-full h-11 border border-slate-300 rounded-xl px-4 text-center font-bold tracking-widest text-sm outline-none focus:border-indigo-600"/>
+        </div>
+        <button type="button" id="verifyOtpBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition">Verify OTP & Reveal Pass Code</button>
+      </div>
+
+      <div id="otpStep3" class="space-y-3 hidden text-center">
+        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800">
+          <p class="text-xs font-bold uppercase tracking-wider">Pass Code Retrieved</p>
+          <p id="recoveredPassCode" class="text-xl font-mono font-bold text-emerald-700 my-1">MP-XXXXXX</p>
+          <p id="recoveredSlot" class="text-xs text-emerald-600">Slot: L1-A01</p>
+        </div>
+        <button type="button" id="closeForgotStep3Btn" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Mall Directory Modal -->
+  <div style="background-image: url(background1.jpg);background-size: cover;" id="mallGuideModal" class="fixed inset-0 z-[200] bg-[#E3DDFF] text-slate-800 hidden flex flex-col overflow-y-auto">
+    <header class="sticky top-0 bg-black text-white border-b border-slate-800 px-6 py-4 flex items-center justify-between z-20 shadow-md">
+      <div class="flex items-center gap-3">
+        <div style="background-image: url('mall logo.png'); background-size: cover;" class="w-16 h-16 rounded-full bg-black text-slate-900 font-bold grid place-items-center shadow-md">
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white leading-tight">Interactive Mall Directory & Store Guide</h1>
+          <p class="text-xs text-slate-400">Floor-wise navigation for Groceries, Fashion, Tech & Dining</p>
+        </div>
+      </div>
+      <button type="button" id="closeMallGuideBtn" class="px-4 py-2 rounded-full bg-indigo-800 hover:bg-red-700 text-slate-200 text-xs flex items-center gap-2 border border-slate-700 transition">
+        <span>Close Directory</span>
+        <span class="text-base font-bold">×</span>
+      </button>
+    </header>
+
+    <!-- Category Filter Tabs -->
+    <div class="sticky top-[81px] z-10 bg-[#f9cdad] px-6 py-3 border-b border-slate-200 flex gap-2 overflow-x-auto no-scrollbar shrink-0 shadow-sm">
+      <button type="button" data-cat="all" class="cat-btn px-4 py-2 rounded-full text-xs font-semibold bg-indigo-600 text-white shadow-sm shrink-0">All Floors</button>
+      <button type="button" data-cat="groceries" class="cat-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">🛒 Supermarket & Groceries</button>
+      <button type="button" data-cat="dining" class="cat-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">🍽️  Dining & Culinary</button>
+      <button type="button" data-cat="fashion" class="cat-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">👗 Fashion & Lifestyle</button>
+      <button type="button" data-cat="electronics" class="cat-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">📱  Electronics & Appliances</button>
+      <button type="button" data-cat="gaming" class="cat-btn px-4 py-2 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">🕹️  Arcade & Fun Games</button>
+    </div>
+
+    <!-- Store Cards Content -->
+    <main class="flex-1 max-w-[1280px] w-full mx-auto p-6 space-y-10">
+      <section id="sec-groceries" class="guide-sec space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold border border-purple-200">Ground Floor</span>
+            <h2 class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xl font-bold border border-purple-200">Supermarket & Fresh Groceries</h2>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+            <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-01-A.avif);"></div>
+            <div class="p-4">
+                <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-slate-900">HyperMarket Superstore</h3>
+                    <span class="text-[10px] bg-purple-50 text-purple-700 font-bold px-2.5 py-1 rounded-full border border-purple-200">
+                         F-01-A
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                     Organic farm produce, dairy, fresh bakery, imported groceries, and household goods.
+                 </p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-01-B.avif);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <h3 class="font-bold text-slate-900">Fresh & Green Organics</h3>
+                <span class="text-[10px] bg-purple-50 text-purple-700 font-semibold px-2.5 py-1 rounded-full border border-purple-200">
+                    F-01-B
+                </span>
+            </div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                Hydroponic greens, exotic imported fruits, cold-pressed juices, and health foods.</p>
+            </div>
+          </div>
+
+           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-01-C.webp);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Grocery Store</h3><span class="text-[10px] bg-purple-50 text-purple-700 font-semibold px-2.5 py-1 rounded-full border border-purple-200">F-01-C</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Fresh dairy, fresh bakery, imported groceries, and household goods.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sec-dining" class="guide-sec space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">First Floor</span>
+            <h2 class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xl font-bold border border-amber-200">Dining & Culinary Hub</h2>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-02-A.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Dominios </h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-02-A</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">🍕The ultimate pizza fix—piping hot, cheesy, and fresh out of the oven.red.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+              <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-02-B.jpeg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Naturals</h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-02-B</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed"> 🍨 From Tender Coconut to seasonal Mango—experience nature’s finest flavors in a scoop. </p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+            <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-02-C.avif);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">The Grand Bistro</h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-02-C</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Multi-cuisine fine dining with outdoor patio seating and artisanal mocktails.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sec-fashion" class="guide-sec space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold border border-pink-200">Second Floor</span>
+            <h2 class="px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xl font-bold border border-pink-200">Fashion, Lifestyle & Footwear</h2>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+            <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-A.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Zara </h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-A</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Discover the latest global trends in runway fashion, tailored tailoring, and modern streetwear.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-B.avif);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Adidas & Nike</h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-B</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">From legendary Originals retro style to high-performance sportswear, upgrade your athletic wardrobe with the iconic Three Stripes.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-C.webp);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Lewis </h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-C</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Step into iconic denim, vintage washes, and timeless style crafted to fit every story.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-D.jpeg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Calvin Klein </h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-D</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Discover iconic underwear, modern denim, and minimalist apparel designed for effortless luxury and confidence.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-E.jpeg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900"> U.S.POLO </h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-E</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Explore iconic polo shirts, tailored casualwear, and timeless American fashion inspired by the authentic sport of polo.</p>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-03-F.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Allen Solly</h3><span class="text-[10px] bg-pink-50 text-pink-700 font-semibold px-2.5 py-1 rounded-full border border-pink-200">F-03-F</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Premium athletic footwear, activewear, running shoes, and limited edition drops.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sec-electronics" class="guide-sec space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-bold border border-sky-200">Third Floor</span>
+            <h2 class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xl font-bold border border-sky-200">Electronics, Tech Hub & Home Appliances</h2>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-A.webp);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Apple Premium Reseller</h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-A</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Explore the latest iPhone, Mac, iPad, and Apple Watch models with hands-on support from Apple Specialists.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-B.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Samsung Experience Center</h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-B</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Step into the future of connected living with interactive demos, flagship devices, and expert tech support.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-C.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Sony</h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-C</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Step into a world of premium audio, BRAVIA displays, Alpha cameras, and PlayStation gaming excellence.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-D.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Croma</h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-D</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Explore India’s favorite mega-store for smartphones, laptops, home appliances, and cutting-edge consumer tech.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-E.jpeg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Vijay Sales</h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-E</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Our trusted retail superstore for the latest home electronics, hassle-free finance options, and expert customer care.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-04-F.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Reliance Digital </h3><span class="text-[10px] bg-sky-50 text-sky-700 font-semibold px-2.5 py-1 rounded-full border border-sky-200">F-04-F</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Explore India’s premier electronics destination for 4K smart TVs, laptops, smartphones, and smart home appliances with expert assistance.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sec-gaming" class="guide-sec space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Fourth Floor</span>
+            <h2 class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xl font-bold border border-amber-200">Arcade & Fun Games </h2>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-05-A.jpeg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Gaming Zone</h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-05-A</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Bring your friends and family for high-octane gaming, friendly competition, and endless fun under one roof.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-05-B.jpg);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Trampoline</h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-05-B</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Experience the ultimate gravity-defying playground with free-jump arenas, dodgeball courts, foam pits, and slam-dunk zones.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
+             <div class="h-44 w-full bg-cover bg-center" style="background-image: url(F-05-C.webp);"></div>
+            <div class="p-4">
+              <div class="flex justify-between items-start"><h3 class="font-bold text-slate-900">Indoor Arena</h3><span class="text-[10px] bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-full border border-amber-200">F-05-C</span></div>
+              <p class="text-xs text-slate-500 mt-2 leading-relaxed">Bring back the golden era of arcade gaming with flashing lights, friendly rivalries, and endless prizes to win.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[13px] font-medium shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-[300]"></div>
+
+  <!-- Site Footer -->
+  <footer class="bg-black text-slate-400 border-t border-slate-800 mt-12">
+    <div class="max-w-[1280px] mx-auto px-6 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <!-- Col 1: Brand Info -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div style="background-image: url('car logo.webp'); background-size: cover;" class="w-10 h-10 rounded-full font-bold text-white shadow-md"></div>
+            <span class="font-[Outfit] font-bold text-white text-lg tracking-tight">Mall Park</span>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-400">
+            Park Smart. Shop Easy. Real-time slot reservations and automated entrance passes for seamless parking experiences.
+          </p>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div>
+          <h4 class="text-sm font-semibold text-white mb-3 tracking-wide">Quick Links</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#layout" class="hover:text-orange-400 transition">Interactive Layout Grid</a></li>
+            <li><a href="#register" class="hover:text-orange-400 transition">Vehicle Registration</a></li>
+            <li><a href="#exit" class="hover:text-orange-400 transition">Exit Gate Terminal</a></li>
+            <li><button type="button" onclick="document.getElementById('navMallGuideBtn').click()" class="hover:text-orange-400 transition text-left">Mall Store Directory</button></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Guidelines & Policies -->
+        <div>
+          <h4 class="text-sm font-semibold text-white mb-3 tracking-wide">Policies & Features</h4>
+          <ul class="space-y-2 text-xs">
+            <li><span class="text-slate-300">⏱️ 6-Hour Max Reservation</span></li>
+            <li><span class="text-slate-300">⚡ Dedicated EV Fast Charging (Lane 3)</span></li>
+            <li><span class="text-slate-300">📲 Instant QR Code Gate Passes</span></li>
+            <li><span class="text-slate-300">🔒 Secure Automated Vacate Gates</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <p>© 2026 MallPark Smart Parking System. All rights reserved.</p>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>All Parking Sensors Online</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Link -->
+  <script src="script.js"></script>
+</body>
+</html>
